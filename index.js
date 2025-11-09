@@ -27,15 +27,58 @@ async function run() {
 
         const db = client.db('assignmentDB10')
         const challengecolls = db.collection('challenges')
+        const tripscollections = db.collection('trips')
+        const eventcollections = db.collection('events')
      
       
+
+        //   all get here
+        app.get('/challenges/limit', async (req, res) => {
+            
+            const corsor = challengecolls.find().limit(6)
+
+            const result = await corsor.toArray()
+            res.send(result)
+        })
+        app.get('/trips/limit', async (req, res) => {
+            
+            const cursor = tripscollections.find().sort({ createdAt: -1 }).limit(5)
+
+            const result = await cursor.toArray()
+
+            res.send(result)
+        })
+        app.get('/events', async (req, res) => {
+
+            const cursor = eventcollections.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        // all post here
+
+        app.post('/trip', async (req, res) => {
+             
+            const data = req.body 
+            const result = await tripscollections.insertOne(data)
+
+            res.send(result)
+         })
+
         app.post('/challenges', async (req, res) => {
               
             const data = req.body 
 
             const result = await challengecolls.insertOne(data)
             res.send(result)
-       })
+        })
+        
+        app.post('/events', async (req, res) => {
+            
+            const data = req.body 
+            const result = await eventcollections.insertOne(data)
+            res.send(result)
+        })
 
 
         await client.db("admin").command({ ping: 1 });
