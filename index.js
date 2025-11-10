@@ -1,5 +1,5 @@
 const express = require('express')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const cors = require('cors');
 const port = process.env.PORT || 3000
@@ -29,7 +29,7 @@ async function run() {
         const challengecolls = db.collection('challenges')
         const tripscollections = db.collection('trips')
         const eventcollections = db.collection('events')
-     
+        const usercollections = db.collection('usercollection')
       
 
         //   all get here
@@ -50,10 +50,51 @@ async function run() {
         })
         app.get('/events', async (req, res) => {
 
-            const cursor = eventcollections.find()
+            const cursor = eventcollections.find().limit(4)
             const result = await cursor.toArray()
             res.send(result)
         })
+        app.get('/trips', async (req, res) => {
+            
+            const cursor = tripscollections.find()
+
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        app.get('/challenges', async (req, res) => {
+
+            const cursor = challengecolls.find()
+
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        app.get('/challenges/:id', async (req, res) => {
+                    
+            const id = req.params.id 
+            const qurey = { _id: new ObjectId(id) }
+            
+            const result = await challengecolls.findOne(qurey)
+            res.send(result)
+        })
+
+
+        app.get('/challengesitem', async (req, res) => {
+
+            const category = req.query.category;
+            let query = {};
+
+            if (category) {
+                query = { category: { $regex: new RegExp(`^${category}$`, 'i') } };
+            }
+
+            const result = await challengecolls.find(query).toArray();
+
+            res.send(result);
+        })
+
+
+       
 
         // all post here
 
@@ -68,7 +109,7 @@ async function run() {
         app.post('/challenges', async (req, res) => {
               
             const data = req.body 
-
+            
             const result = await challengecolls.insertOne(data)
             res.send(result)
         })
