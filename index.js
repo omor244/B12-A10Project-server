@@ -30,18 +30,18 @@ async function run() {
         const tripscollections = db.collection('trips')
         const eventcollections = db.collection('events')
         const usercollections = db.collection('usercollection')
-      
+
 
         //   all get here
         app.get('/challenges/limit', async (req, res) => {
-            
+
             const corsor = challengecolls.find().limit(6)
 
             const result = await corsor.toArray()
             res.send(result)
         })
         app.get('/trips/limit', async (req, res) => {
-            
+
             const cursor = tripscollections.find().sort({ createdAt: -1 }).limit(5)
 
             const result = await cursor.toArray()
@@ -55,7 +55,7 @@ async function run() {
             res.send(result)
         })
         app.get('/trips', async (req, res) => {
-            
+
             const cursor = tripscollections.find()
 
             const result = await cursor.toArray()
@@ -70,10 +70,10 @@ async function run() {
             res.send(result)
         })
         app.get('/challenges/:id', async (req, res) => {
-                    
-            const id = req.params.id 
+
+            const id = req.params.id
             const qurey = { _id: new ObjectId(id) }
-            
+
             const result = await challengecolls.findOne(qurey)
             res.send(result)
         })
@@ -92,48 +92,64 @@ async function run() {
 
             res.send(result);
         })
+        app.get('/challengemail', async function (req, res) {
+            try {
+                const email = req.query.email;
+                console.log('Email:', email);
+                const result = await challengecolls.find({ createdBy: email }).toArray();
+                res.send(result);
+            } catch (err) {
+                console.error(err);
+                res.status(500).send({ error: 'Server error' });
+            }
+        });
 
 
-       
+
 
         // all post here
-         
+
 
         app.post('/trip', async (req, res) => {
-             
-            const data = req.body 
+
+            const data = req.body
             const result = await tripscollections.insertOne(data)
 
             res.send(result)
-         })
+        })
 
         app.post('/challenges', async (req, res) => {
-              
-            const data = req.body 
-            
+
+            const data = req.body
+
             const result = await challengecolls.insertOne(data)
             res.send(result)
         })
         app.post('/challenges/:id/join', async (req, res) => {
-         
-                const id = req.params.id;       // challenge ID from URL
-                const data = req.body;          // user info from frontend
 
-                // Combine user data with challengeId
-                const newJoin = {
-                    ...data,
-                    challengeId: new ObjectId(id),
-                   
-                };
+            const id = req.params.id;       // challenge ID from URL
+            const data = req.body;          // user info from frontend
 
-                const result = await usercollections.insertOne(newJoin);
-                res.status(201).send(result);
-           
+            // Combine user data with challengeId
+            const newJoin = {
+                ...data,
+                challengeId: new ObjectId(id),
+            };
+
+            const filter = { _id: new ObjectId(id) }
+
+            const update = { $inc: { participants: 1 } }
+            const result = await usercollections.insertOne(newJoin);
+            const participantscount = await challengecolls.updateOne(filter, update)
+
+
+            res.send({ result, participantscount });
+
         });
-        
+
         app.post('/events', async (req, res) => {
-            
-            const data = req.body 
+
+            const data = req.body
             const result = await eventcollections.insertOne(data)
             res.send(result)
         })
