@@ -93,15 +93,12 @@ async function run() {
             res.send(result);
         })
         app.get('/challengemail', async function (req, res) {
-            try {
+        
                 const email = req.query.email;
-                console.log('Email:', email);
+                
                 const result = await challengecolls.find({ createdBy: email }).toArray();
                 res.send(result);
-            } catch (err) {
-                console.error(err);
-                res.status(500).send({ error: 'Server error' });
-            }
+             
         });
 
 
@@ -151,6 +148,17 @@ async function run() {
 
             const data = req.body
             const result = await eventcollections.insertOne(data)
+            res.send(result)
+        })
+
+        // all patch here 
+        app.patch('/update/:id', async (req, res) => {
+          
+            const id = req.params.id 
+            const data = req.body 
+            const query = { _id: new ObjectId(id) }
+            const update = { $set: data }
+            const result = await challengecolls.updateOne(query, update)
             res.send(result)
         })
 
