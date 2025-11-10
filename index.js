@@ -97,6 +97,7 @@ async function run() {
        
 
         // all post here
+         
 
         app.post('/trip', async (req, res) => {
              
@@ -113,6 +114,22 @@ async function run() {
             const result = await challengecolls.insertOne(data)
             res.send(result)
         })
+        app.post('/challenges/:id/join', async (req, res) => {
+         
+                const id = req.params.id;       // challenge ID from URL
+                const data = req.body;          // user info from frontend
+
+                // Combine user data with challengeId
+                const newJoin = {
+                    ...data,
+                    challengeId: new ObjectId(id),
+                   
+                };
+
+                const result = await usercollections.insertOne(newJoin);
+                res.status(201).send(result);
+           
+        });
         
         app.post('/events', async (req, res) => {
             
