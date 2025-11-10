@@ -77,6 +77,14 @@ async function run() {
             const result = await challengecolls.findOne(qurey)
             res.send(result)
         })
+        app.get('/join/:id', async (req, res) => {
+
+            const id = req.params.id
+            const qurey = { _id: new ObjectId(id) }
+
+            const result = await challengecolls.findOne(qurey)
+            res.send(result)
+        })
 
 
         app.get('/challengesitem', async (req, res) => {
@@ -100,6 +108,7 @@ async function run() {
                 res.send(result);
              
         });
+     
 
 
 
