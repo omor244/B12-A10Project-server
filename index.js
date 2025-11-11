@@ -23,7 +23,7 @@ app.use(express.json())
 
 async function run() {
     try {
-        await client.connect();
+        // await client.connect()
 
         const db = client.db('assignmentDB10')
         const challengecolls = db.collection('challenges')
@@ -171,8 +171,17 @@ async function run() {
             res.send(result)
         })
 
+        // delete here 
+        app.delete('/delete/:id', async (req, res) => {
+            const id = req.params.id 
+            const query = { _id: new ObjectId(id) }
+            const result = await challengecolls.deleteOne(query)
 
-        await client.db("admin").command({ ping: 1 });
+            res.send(result)
+        })
+
+
+        // await client.db("admin").command({ ping: 1 })
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
