@@ -5,9 +5,8 @@ require('dotenv').config()
 const cors = require('cors')
 const port = process.env.PORT || 3000
 
-const admin = require("firebase-admin");
 
-const serviceAccount = require("path/to/serviceAccountKey.json");
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9gmdrlc.mongodb.net/?appName=Cluster0`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -24,9 +23,8 @@ app.use(express.json())
 
 
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+
+
 
 
 
